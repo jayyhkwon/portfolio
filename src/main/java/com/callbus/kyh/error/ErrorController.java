@@ -22,6 +22,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ErrorController {
 
+    private String getSimepleName(Exception e){
+        return e.getClass().getSimpleName();
+    }
+
 
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -37,7 +41,13 @@ public class ErrorController {
     @ExceptionHandler(InvalidFormatException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleInvalidFormatException(InvalidFormatException e){
-        return new ErrorResponse("올바른 접근이 아닙니다", e.getClass().getSimpleName());
+        return new ErrorResponse("올바른 접근이 아닙니다", getSimepleName(e));
+    }
+
+    @ExceptionHandler(InvalidCertNumberException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidCertNumberException(InvalidCertNumberException e){
+        return new ErrorResponse(e.getMessage(), getSimepleName(e));
     }
 
 }
