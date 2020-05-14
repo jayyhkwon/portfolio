@@ -15,7 +15,7 @@ fcm:
   key:
     path: push-test-3035f-firebase-adminsdk-xhjoq-d2c8e79be3.json
     client-token: evVxPHaiTt6o37_of1l8ha:APA91bHPstR-28IPqZSrZ674qL2KFS1KsZ2hOEhLc8DsQ69QARag1N04WIj8lAUJDL_zwdCokz-rsJFHKnakJ24jUcGDDikxXvdvoMV3VpHE4qWbESaCAj_HhXvZV5r8RE0VyQoH8Xxz
-    server-key: AIzaSyD0OuBmS4uuh4ksELi4l2y5CmJHDwLtuw8
+    server-key: AAAAHC0s3BI:APA91bF3rhTp7hj7gign_8sjxyO6SBocZdvOi7cLnsTitTbqn4CzHOTJfq5LkdFoktnF0K0QGjAPApvRodRtCJBtcjQ_MZSb7CTjG_BdKi_cWS6qJMbJP0ruU_3NTkZeCiiNPQpG2X8-
 
 expire:
   client:

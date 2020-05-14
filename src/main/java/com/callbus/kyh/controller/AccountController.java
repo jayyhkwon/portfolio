@@ -1,31 +1,26 @@
 package com.callbus.kyh.controller;
 
 
+import com.callbus.kyh.error.InvalidCertNumberException;
 import com.callbus.kyh.service.AccountService;
 import com.callbus.kyh.service.PushService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.firebase.messaging.FirebaseMessagingException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.ref.PhantomReference;
-
 @RestController
 @RequestMapping("/account")
+@RequiredArgsConstructor
 public class AccountController {
 
-    @Autowired
-    AccountService accountService;
+    private final AccountService accountService;
 
-    @Autowired
-    PushService pushService;
+    private final PushService pushService;
 
 
     @PostMapping("/cert/send")
@@ -36,11 +31,16 @@ public class AccountController {
 
     @PostMapping("/login")
     public void login(@RequestBody ClientLoginRequest request) {
+        String certNumber = accountService.getCertNumber(request.getPhoneNumber());
+
+        if (!certNumber.equals(request.getCertNum()))
+            throw new InvalidCertNumberException("인증번호 불일치");
     }
 
     @Getter
     @Setter
     @AllArgsConstructor
+    @NoArgsConstructor
     @ToString
     public static class ClientLoginRequest {
         private String phoneNumber;
