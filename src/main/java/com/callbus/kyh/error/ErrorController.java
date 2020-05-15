@@ -27,6 +27,10 @@ public class ErrorController {
     }
 
 
+
+    // 401 Unauthorized
+    // 비록 HTTP 표준에서는 "미승인(unauthorized)"를 명확히 하고 있지만, 의미상 이 응답은 "비인증(unauthenticated)"을 의미합니다.
+    // 클라이언트는 요청한 응답을 받기 위해서는 반드시 스스로를 인증해야 합니다.
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleUnauthorizedException(UnauthorizedException e) {
@@ -38,14 +42,21 @@ public class ErrorController {
      * @param e
      * @return
      */
+
+    // 401 Unauthorized
+    // 비록 HTTP 표준에서는 "미승인(unauthorized)"를 명확히 하고 있지만, 의미상 이 응답은 "비인증(unauthenticated)"을 의미합니다.
+    // 클라이언트는 요청한 응답을 받기 위해서는 반드시 스스로를 인증해야 합니다.
     @ExceptionHandler(InvalidFormatException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleInvalidFormatException(InvalidFormatException e){
         return new ErrorResponse("올바른 접근이 아닙니다", getSimepleName(e));
     }
 
+    // 401 Unauthorized
+    // 비록 HTTP 표준에서는 "미승인(unauthorized)"를 명확히 하고 있지만, 의미상 이 응답은 "비인증(unauthenticated)"을 의미합니다.
+    // 클라이언트는 요청한 응답을 받기 위해서는 반드시 스스로를 인증해야 합니다.
     @ExceptionHandler(InvalidCertNumberException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleInvalidCertNumberException(InvalidCertNumberException e){
         return new ErrorResponse(e.getMessage(), getSimepleName(e));
     }
