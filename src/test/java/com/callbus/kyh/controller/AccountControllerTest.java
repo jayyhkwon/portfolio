@@ -18,7 +18,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = "spring.config.location=classpath:/application.yml")
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 public class AccountControllerTest {
