@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.callbus.kyh.mapper.AccountMapper">
+
+
+    <select id="findById" resultType="com.callbus.kyh.dto.client.ClientDTO">
+        SELECT A.id
+            , A.name
+            , A.phone_number
+            , A.push_agree
+            , B.type
+            , A.register_date
+            , A.update_date
+        FROM CLIENT A
+        INNER JOIN CLIENT_TYPE B ON A.client_type_id = B.id
+        WHERE A.id = #{id}
+    </select>
+
+    <insert id="joinAsClient" parameterType="com.callbus.kyh.dto.client.ClientDTO">
+        insert into CLIENT(phone_number, push_agree)
+        values (#{phoneNumber}, #{pushAgree})
+    </insert>
+
+    <select id="phoneNumberCheck" parameterType="String" resultType="int">
+        SELECT COUNT(PHONE_NUMBER)
+        FROM CLIENT
+        WHERE PHONE_NUMBER = #{phone_number}
+    </select>
+
+</mapper>

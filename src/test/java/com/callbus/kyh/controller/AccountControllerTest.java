@@ -1,5 +1,6 @@
 package com.callbus.kyh.controller;
 
+import com.callbus.kyh.error.DuplicatedPhoneNumberException;
 import com.callbus.kyh.service.AccountService;
 import com.callbus.kyh.service.PushService;
 import org.junit.Before;
@@ -15,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,6 +48,30 @@ public class AccountControllerTest {
 //                                        .setControllerAdvice(new ErrorController())
 //                                        .build();
     }
+
+    @Test
+    public void join_일반회원_성공() throws Exception {
+        mockMvc.perform(post("/account/join")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(request))
+                .andExpect(status().isOk());
+
+        verify(accountService).joinAsClient(anyString());
+    }
+
+    @Test
+    public void join_일반회원_아이디_중복() throws Exception{
+
+        doThrow(new DuplicatedPhoneNumberException("중복된 번호 입니다")).when(accountService).joinAsClient(anyString());
+
+        mockMvc.perform(post("/account/join")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(request))
+                .andExpect(status().isConflict());
+
+        verify(accountService).joinAsClient(anyString());
+    }
+
 
     @Test
     public void login_인증번호_일치() throws Exception {
