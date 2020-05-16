@@ -61,4 +61,12 @@ public class ErrorController {
         return new ErrorResponse(e.getMessage(), getSimepleName(e));
     }
 
+    // 409 Conflict
+    // 이 응답은 요청이 현재 서버의 상태와 충돌될 때 보냅니다.
+    @ExceptionHandler(DuplicatedPhoneNumberException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDuplicatedPhoneNumberException(DuplicatedPhoneNumberException e){
+        return new ErrorResponse(e.getMessage(), getSimepleName(e));
+    }
+
 }

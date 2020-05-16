@@ -1,13 +1,16 @@
 package com.callbus.kyh.controller;
 
 
+import com.callbus.kyh.dto.client.PlayerType;
 import com.callbus.kyh.error.InvalidCertNumberException;
 import com.callbus.kyh.service.AccountService;
 import com.callbus.kyh.service.PushService;
 import com.callbus.kyh.utils.SessionUtils;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.firebase.messaging.FirebaseMessagingException;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,10 +35,28 @@ public class AccountController {
     private int maxInactiveIntervalInSeconds;
 
 
+    /**
+     * 사용자에게 인증번호를 보내고 redis에 인증번호를 저장한다.
+     * @param request
+     * @throws FirebaseMessagingException
+     */
     @PostMapping("/cert/send")
     public void send(@RequestBody ClientLoginRequest request) throws FirebaseMessagingException {
         String certNumber = accountService.saveCertNumber(request.getPhoneNumber());
         pushService.pushCertNumber(request.getPhoneNumber(), certNumber);
+    }
+
+    /**
+     * 회원가입 (일반 고객만 구현)
+     * @param request
+     */
+    @PostMapping("/join")
+    public void join(@RequestBody ClientLoginRequest request) {
+        if(request.getPlayerType() == PlayerType.CLIENT){
+            accountService.joinAsClient(request.getPhoneNumber());
+        }
+
+
     }
 
     @PostMapping("/login")
@@ -66,8 +87,6 @@ public class AccountController {
 
     @Getter
     @Setter
-    @AllArgsConstructor
-    @NoArgsConstructor
     @ToString
     private static class ClientLoginRequest {
         private String phoneNumber;
@@ -75,13 +94,5 @@ public class AccountController {
         private PlayerType playerType;
     }
 
-    public enum PlayerType {
-        @JsonProperty("1")
-        CLIENT,
-        @JsonProperty("2")
-        BUS_DRIVER,
-        @JsonProperty("3")
-        BUS_COMPANY;
-    }
 
 }
