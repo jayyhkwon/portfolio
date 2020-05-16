@@ -55,8 +55,6 @@ public class AccountController {
         if(request.getPlayerType() == PlayerType.CLIENT){
             accountService.joinAsClient(request.getPhoneNumber());
         }
-
-
     }
 
     @PostMapping("/login")

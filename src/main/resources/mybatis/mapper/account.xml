@@ -24,7 +24,7 @@
     <select id="phoneNumberCheck" parameterType="String" resultType="int">
         SELECT COUNT(PHONE_NUMBER)
         FROM CLIENT
-        WHERE PHONE_NUMBER = #{phone_number}
+        WHERE PHONE_NUMBER = #{phoneNumber}
     </select>
 
 </mapper>
