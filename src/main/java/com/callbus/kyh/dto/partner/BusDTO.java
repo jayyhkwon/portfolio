@@ -1,22 +1,24 @@
-package com.callbus.kyh.dto.client;
+package com.callbus.kyh.dto.partner;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @ToString
-@Alias("ClientDTO")
-public class ClientDTO {
+public class BusDTO {
 
+    @JsonIgnore
     private long id;
-    private String phoneNumber;
-    private boolean pushAgree;
+    @JsonIgnore
+    private long busTypeId;
+    private String name;
+    private int capacity;
+    private int busYear;
     @JsonIgnore
     private LocalDateTime registerDate;
     @JsonIgnore

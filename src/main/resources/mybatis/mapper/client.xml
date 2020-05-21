@@ -3,17 +3,16 @@
 <mapper namespace="com.callbus.kyh.mapper.ClientMapper">
 
 
-    <select id="findById" resultType="ClientDTO">
-        SELECT A.id
-            , A.name
-            , A.phone_number
-            , A.push_agree
-            , B.type
-            , A.register_date
-            , A.update_date
-        FROM CLIENT A
-        INNER JOIN CLIENT_TYPE B ON A.client_type_id = B.id
-        WHERE A.id = #{id}
+    <select id="findIdByPhoneNumber" parameterType="string" resultType="long">
+        SELECT ID
+        FROM CLIENT
+        WHERE PHONE_NUMBER = #{phoneNumber}
+    </select>
+
+    <select id="findById" parameterType="long" resultType="com.callbus.kyh.dto.client.ClientDTO">
+        SELECT *
+        FROM CLIENT
+        WHERE ID = #{id}
     </select>
 
 </mapper>

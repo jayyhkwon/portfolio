@@ -65,7 +65,19 @@ public class ErrorController {
     // 이 응답은 요청이 현재 서버의 상태와 충돌될 때 보냅니다.
     @ExceptionHandler(DuplicatedPhoneNumberException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleDuplicatedPhoneNumberException(DuplicatedPhoneNumberException e){
+    public ErrorResponse handleDuplicatedPhoneNumberException(DuplicatedPhoneNumberException e) {
+        return new ErrorResponse(e.getMessage(), getSimepleName(e));
+    }
+
+    @ExceptionHandler(UnknownException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleUnknownException(UnknownException e) {
+        return new ErrorResponse(e.getMessage(), getSimepleName(e));
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidRequestException(InvalidRequestException e) {
         return new ErrorResponse(e.getMessage(), getSimepleName(e));
     }
 
