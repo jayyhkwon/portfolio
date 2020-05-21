@@ -25,11 +25,10 @@ public class LoginCheckAspect {
      */
     @Before(value = "@annotation(com.callbus.kyh.aop.LoginCheck)")
     public void loginCheck(JoinPoint jp) {
-
-        HttpSession session = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest().getSession();
-        String id = SessionUtils.getLoginMemberId(session);
-
-        if (StringUtils.isEmpty(id)) {
+        try {
+            HttpSession session = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest().getSession();
+            long id = SessionUtils.getClientId(session);
+        } catch (NullPointerException e) {
             throw new UnauthorizedException("로그인이 필요합니다");
         }
     }
