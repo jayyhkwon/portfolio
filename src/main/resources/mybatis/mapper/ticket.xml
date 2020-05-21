@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.callbus.kyh.mapper.TicketMapper">
+
+    <resultMap id="biddingDetail" type="com.callbus.kyh.dto.ticket.BiddingDetailDTO">
+
+        <result property="id" column="id"/>
+        <result property="ticketId" column="ticket_id"/>
+        <result property="driverId" column="driver_id"/>
+        <result property="busType" column="bus_type"/>
+        <result property="price" column="price"/>
+        <result property="additionalFee1" column="additional_fee1"/>
+        <result property="additionalFee2" column="additional_fee2"/>
+        <result property="additionalFee3" column="additional_fee3"/>
+        <result property="additionalFee4" column="additional_fee4"/>
+        <result property="additionalFee5" column="additional_fee5"/>
+
+
+        <association property="busDriverDTO" javaType="com.callbus.kyh.dto.partner.BusDriverDTO">
+            <id property="id" column="driver_id"/>
+            <result property="busId" column="bus_id"/>
+            <result property="companyId" column="company_id"/>
+            <result property="name" column="name"/>
+            <result property="phoneNumber" column="phone_number"/>
+            <result property="status" column="status"/>
+            <result property="faceImg" column="face_img"/>
+            <result property="carPhoto1" column="car_photo1"/>
+            <result property="carPhoto2" column="car_photo2"/>
+            <result property="carPhoto3" column="car_photo3"/>
+            <result property="carPhoto4" column="car_photo4"/>
+            <result property="comment" column="comment"/>
+            <result property="score" column="score"/>
+            <result property="insurance" column="insurance"/>
+            <result property="biddingCnt" column="bidding_cnt"/>
+            <result property="concurrentBiddingCnt" column="concurrent_bidding_cnt"/>
+            <result property="reviewCnt" column="review_cnt"/>
+            <result property="carNum" column="car_num"/>
+            <result property="registerDate" column="register_date"/>
+            <result property="updateDate" column="update_date"/>
+        </association>
+
+        <association property="busDTO" javaType="com.callbus.kyh.dto.partner.BusDTO">
+            <result property="name" column="bus_name"/>
+            <result property="capacity" column="capacity"/>
+            <result property="busYear" column="bus_year"/>
+        </association>
+
+        <association property="busCompanyDTO" javaType="com.callbus.kyh.dto.partner.BusCompanyDTO">
+            <id property="id" column="company_id"/>
+            <result property="companyName" column="company_name"/>
+            <result property="garageName" column="garage_name"/>
+            <result property="garageAddress" column="garage_address"/>
+        </association>
+
+    </resultMap>
+
+    <insert id="createTicket" parameterType="com.callbus.kyh.dto.ticket.TicketDTO" useGeneratedKeys="true"
+            keyProperty="id">
+
+        INSERT INTO TICKET(client_id, src_name, src_address, src_latitude, src_longitude, stopover, dst_name, dst_address, dst_latitude, dst_longitude, trip_type_id, depart_date, return_date, together, user_cnt, card, bus_type_id, tax_receipt, distance, status, expire_date, comment)
+        VALUES (#{clientId}, #{srcName}, #{srcAddress}, #{srcLatitude}, #{srcLongitude}, #{stopover}, #{dstName}, #{dstAddress}, #{dstLatitude}, #{dstLongitude}, #{tripTypeId}, #{departDate}, #{returnDate}, #{together}, #{userCnt}, #{card}, #{busTypeId}, #{taxReceipt}, #{distance}, #{status}, #{expireDate}, #{comment});
+    </insert>
+
+
+    <update id="updateTicket" parameterType="com.callbus.kyh.dto.ticket.TicketDTO">
+        UPDATE TICKET
+        SET CARD = #{card},
+            TAX_RECEIPT = #{taxReceipt},
+            COMMENT = #{comment}
+        WHERE ID = #{id} AND CLIENT_ID = #{clientId}
+    </update>
+
+    <select id="getTickets" parameterType="long" resultType="com.callbus.kyh.dto.ticket.TicketDTO">
+        SELECT *
+        FROM TICKET
+        WHERE CLIENT_ID = #{clientId}
+    </select>
+
+    <select id="getBiddingsDetail" parameterType="long" resultMap="biddingDetail">
+        SELECT A.ID
+             , A.ticket_id
+             , A.driver_id
+             , A.price
+             , A.additional_fee1
+             , A.additional_fee2
+             , A.additional_fee3
+             , A.additional_fee4
+             , A.additional_fee5
+             , B.face_img
+             , B.id as driver_id
+             , B.bus_id
+             , B.bus_company_id
+             , B.name
+             , B.phone_number
+             , B.status
+             , B.car_photo1
+             , B.car_photo2
+             , B.car_photo3
+             , B.car_photo4
+             , B.comment
+             , B.score
+             , B.insurance
+             , B.concurrent_bidding_cnt
+             , B.review_cnt
+             , B.car_num
+             , C.id as company_id
+             , C.company_name
+             , C.garage_name
+             , C.garage_address
+             , D.name as bus_name
+             , D.capacity
+             , D.bus_year
+             , E.TYPE as bus_type
+        FROM BIDDING A
+        INNER JOIN BUS_DRIVER B ON A.DRIVER_ID = B.ID
+        INNER JOIN BUS_COMPANY C ON B.BUS_COMPANY_ID = C.ID
+        INNER JOIN BUS D ON B.BUS_ID = D.ID
+        INNER JOIN BUS_TYPE E ON D.BUS_TYPE_ID = E.ID
+        WHERE A.TICKET_ID = #{ticketId}
+    </select>
+
+    <select id="hasTicket" resultType="boolean">
+        SELECT COUNT(*)
+        FROM TICKET
+        WHERE ID = #{ticketId} AND CLIENT_ID = #{clientId}
+    </select>
+
+    <update id="cancelTicket">
+        UPDATE TICKET
+        SET STATUS = #{status},
+            CANCEL_REASON = #{cancelReason}
+        WHERE CLIENT_ID = #{clientId} AND ID = #{ticketId}
+    </update>
+    
+</mapper>
