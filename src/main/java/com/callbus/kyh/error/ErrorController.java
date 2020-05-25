@@ -2,10 +2,15 @@ package com.callbus.kyh.error;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  * 스프링에서 지원하는 예외처리 어노테이션
@@ -65,8 +70,28 @@ public class ErrorController {
     // 이 응답은 요청이 현재 서버의 상태와 충돌될 때 보냅니다.
     @ExceptionHandler(DuplicatedPhoneNumberException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleDuplicatedPhoneNumberException(DuplicatedPhoneNumberException e){
+    public ErrorResponse handleDuplicatedPhoneNumberException(DuplicatedPhoneNumberException e) {
         return new ErrorResponse(e.getMessage(), getSimepleName(e));
+    }
+
+    @ExceptionHandler(UnknownException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleUnknownException(UnknownException e) {
+        return new ErrorResponse(e.getMessage(), getSimepleName(e));
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidRequestException(InvalidRequestException e) {
+        return new ErrorResponse(e.getMessage(), getSimepleName(e));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex){
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors()
+                .forEach(c -> errors.put(((FieldError) c).getField(), c.getDefaultMessage()));
+        return ResponseEntity.badRequest().body(errors);
     }
 
 }
