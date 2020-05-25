@@ -21,6 +21,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/account")
@@ -37,11 +40,13 @@ public class AccountController {
 
     /**
      * 사용자에게 인증번호를 보내고 redis에 인증번호를 저장한다.
+     * 카카오 push API 오류가 있어 개인 휴대폰으로 구현
+     *
      * @param request
      * @throws FirebaseMessagingException
      */
     @PostMapping("/cert/send")
-    public void send(@RequestBody ClientLoginRequest request) throws FirebaseMessagingException {
+    public void send(@RequestBody @Valid ClientSendRequest request) throws FirebaseMessagingException {
         String certNumber = accountService.saveCertNumber(request.getPhoneNumber());
         pushService.pushCertNumber(request.getPhoneNumber(), certNumber);
     }
@@ -94,5 +99,12 @@ public class AccountController {
         private PlayerType playerType;
     }
 
+    @Getter
+    @Setter
+    @ToString
+    private static class ClientSendRequest {
+        @NotBlank
+        private String phoneNumber;
+    }
 
 }
