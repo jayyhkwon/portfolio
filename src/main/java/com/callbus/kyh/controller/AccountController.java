@@ -3,8 +3,10 @@ package com.callbus.kyh.controller;
 
 import com.callbus.kyh.dto.client.PlayerType;
 import com.callbus.kyh.error.InvalidCertNumberException;
+import com.callbus.kyh.error.UnauthorizedException;
 import com.callbus.kyh.service.AccountService;
 import com.callbus.kyh.service.PushService;
+import com.callbus.kyh.service.UserService;
 import com.callbus.kyh.utils.SessionUtils;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.Getter;
@@ -34,17 +36,22 @@ public class AccountController {
 
     private final PushService pushService;
 
+    private final UserService userService;
+
     @Value("${expire.client.session}")
     private int maxInactiveIntervalInSeconds;
 
 
     /**
+     * 인증번호 전송
      * 사용자에게 인증번호를 보내고 redis에 인증번호를 저장한다.
+     * 카카오 push API 오류가 있어 개인 휴대폰으로 구현
+     *
      * @param request
      * @throws FirebaseMessagingException
      */
     @PostMapping("/cert/send")
-    public void send(@RequestBody ClientLoginRequest request) throws FirebaseMessagingException {
+    public void send(@RequestBody @Valid ClientSendRequest request) throws FirebaseMessagingException {
         String certNumber = accountService.saveCertNumber(request.getPhoneNumber());
         pushService.pushCertNumber(request.getPhoneNumber(), certNumber);
     }
@@ -60,6 +67,12 @@ public class AccountController {
         }
     }
 
+    /**
+     * 로그인
+     * @param loginRequest
+     * @param request
+     * @param response
+     */
     @PostMapping("/login")
     public void login(@RequestBody ClientLoginRequest loginRequest,
                       HttpServletRequest request,
@@ -70,8 +83,12 @@ public class AccountController {
         if (!certNumber.equals(loginRequest.getCertNum()))
             throw new InvalidCertNumberException("인증번호 불일치");
 
+        long clientId = userService.getClientIdByPhoneNumber(loginRequest.getPhoneNumber());
+        if (clientId == 0)
+            throw new UnauthorizedException("회원 가입되지 않은 번호입니다");
+
         HttpSession session = request.getSession();
-        SessionUtils.setLoginMemberId(session);
+        SessionUtils.setClientId(session, clientId);
         addCookies(request, response);
     }
 
@@ -96,5 +113,13 @@ public class AccountController {
         @Size(min = 4, max = 4)
         private String certNum;
         private PlayerType playerType;
+    }
+  
+    @Getter
+    @Setter
+    @ToString
+    private static class ClientSendRequest {
+        @NotBlank
+        private String phoneNumber;
     }
 }
