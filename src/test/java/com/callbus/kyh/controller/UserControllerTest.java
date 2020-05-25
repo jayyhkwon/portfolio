@@ -71,7 +71,6 @@ public class UserControllerTest {
             "}";
 
     String updateRequest = "{\n" +
-            "\t\"ticketPK\": 352356,\n" +
             "\t\"card\": 1,\n" +
             "\t\"taxReceipt\": 0,\n" +
             "\t\"comment\": \"\"\n" +
@@ -102,7 +101,7 @@ public class UserControllerTest {
 
     @Test
     public void ticketUpdate_티켓업데이트() throws Exception {
-        mockMvc.perform(put("/user/tickets/normal/update")
+        mockMvc.perform(put("/user/tickets/{ticketId}",1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateRequest))
                 .andExpect(status().isOk());

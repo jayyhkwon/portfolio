@@ -8,5 +8,5 @@ public interface ClientMapper {
 
     ClientDTO findById(long id);
 
-    long findIdByPhoneNumber(String phoneNumber);
+    Long findIdByPhoneNumber(String phoneNumber);
 }

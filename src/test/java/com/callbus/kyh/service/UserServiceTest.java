@@ -94,7 +94,6 @@ public class UserServiceTest {
     @Test(expected = InvalidRequestException.class)
     public void cancelTicket_티켓삭제_티켓이_없는_경우() {
         given(ticketMapper.hasTicket(anyLong(),anyLong())).willReturn(false);
-        given(ticketMapper.cancelTicket(anyLong(),anyLong(),any(TicketDTO.Status.class),any(TicketDTO.CancelReason.class))).willReturn(1);
 
         userService.cancelTicket(1L,1L, TicketDTO.CancelReason.CANCELED_ETC);
     }

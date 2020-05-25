@@ -3,16 +3,21 @@ package com.callbus.kyh.controller;
 import com.callbus.kyh.aop.LoginCheck;
 import com.callbus.kyh.dto.ticket.TicketBiddingDTO;
 import com.callbus.kyh.dto.ticket.TicketDTO;
+import com.callbus.kyh.error.InvalidRequestException;
 import com.callbus.kyh.service.UserService;
 import com.callbus.kyh.utils.SessionUtils;
+import com.callbus.kyh.utils.ValidateUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,7 +25,6 @@ import java.util.List;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 
-// TODO : Reqeust argument 검증하기
 public class UserController {
 
     private final UserService userService;
@@ -34,7 +38,7 @@ public class UserController {
      */
     @LoginCheck
     @PostMapping("/tickets/create")
-    public TicketCreateResponse createTicket(@RequestBody TicketCreateRequest request, HttpSession session) {
+    public TicketCreateResponse createTicket(@RequestBody @Valid TicketCreateRequest request, HttpSession session) {
         TicketDTO ticket = createTicketDTO(request, SessionUtils.getClientId(session));
         TicketCreateResponse response = new TicketCreateResponse();
         response.setTicketPK(userService.createTicket(ticket));
@@ -48,9 +52,10 @@ public class UserController {
      * @param session
      */
     @LoginCheck
-    @PutMapping("/tickets/normal/update")
-    public void updateTicket(@RequestBody TicketUpdateRequest request, HttpSession session) {
-        TicketDTO ticket = createTicketDTOForUpdate(request, SessionUtils.getClientId(session));
+    @PutMapping("/tickets/{ticketId}")
+    public void updateTicket(@RequestBody @Valid TicketUpdateRequest request, @PathVariable("ticketId") long ticketId,
+                             HttpSession session) {
+        TicketDTO ticket = createTicketDTOForUpdate(request, ticketId, SessionUtils.getClientId(session));
         userService.updateTicket(ticket);
     }
 
@@ -71,11 +76,11 @@ public class UserController {
 
     /**
      * 티켓 취소
-     * ticketType=0&cancelReason=2
      */
 
     @DeleteMapping("/tickets/{ticketId}")
-    public void cancelTicket(@PathVariable("ticketId") long ticketId, @RequestBody TicketCancelRequest request, HttpSession session) {
+    public void cancelTicket(@PathVariable("ticketId") long ticketId, @RequestBody @Valid TicketCancelRequest request,
+                             HttpSession session) {
         long clientId = SessionUtils.getClientId(session);
         userService.cancelTicket(clientId, ticketId, request.getCancelReason());
     }
@@ -106,9 +111,9 @@ public class UserController {
         return ticketDTO;
     }
 
-    private TicketDTO createTicketDTOForUpdate(TicketUpdateRequest request, long clientId) {
+    private TicketDTO createTicketDTOForUpdate(TicketUpdateRequest request, long ticketId, long clientId) {
         TicketDTO ticketDTO = new TicketDTO();
-        ticketDTO.setId(request.getTicketPK());
+        ticketDTO.setId(ticketId);
         ticketDTO.setClientId(clientId);
         ticketDTO.setCard(request.getCard());
         ticketDTO.setTaxReceipt(request.getTaxReceipt());
@@ -123,19 +128,34 @@ public class UserController {
     @ToString
     private static class TicketCreateRequest {
 
+        @NotBlank
         private String srcName;
+        @NotBlank
         private String srcAddress;
+        @Min(value = -90)
+        @Max(value = 90)
         private double srcLatitude;
+        @Min(value = -180)
+        @Max(value = 180)
         private double srcLongitude;
 
+        @NotBlank
         private String dstName;
+        @NotBlank
         private String dstAddress;
+        @Min(value = -90)
+        @Max(value = 90)
         private double dstLatitude;
+        @Min(value = -180)
+        @Max(value = 180)
         private double dstLongitude;
 
+        @Positive
         private int tripType;
+        @FutureOrPresent
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime departDate;
+        @Future
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime returnDate;
         private int together;
@@ -151,7 +171,6 @@ public class UserController {
     @Getter
     @Setter
     private static class TicketUpdateRequest {
-        private long ticketPK;
         private int card;
         private int taxReceipt;
         private String comment;
@@ -160,6 +179,7 @@ public class UserController {
     @Getter
     @Setter
     private static class TicketCancelRequest {
+        @PositiveOrZero
         private int ticketType;
         private TicketDTO.CancelReason cancelReason;
     }
