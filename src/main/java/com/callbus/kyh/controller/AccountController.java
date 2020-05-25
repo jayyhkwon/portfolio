@@ -23,6 +23,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/account")
@@ -67,14 +70,14 @@ public class AccountController {
 
     /**
      * 로그인
+     *
      * @param loginRequest
      * @param request
      * @param response
      */
     @PostMapping("/login")
-    public void login(@RequestBody ClientLoginRequest loginRequest,
-                      HttpServletRequest request,
-                      HttpServletResponse response) {
+    public void login(@RequestBody @Valid ClientLoginRequest loginRequest,
+                      HttpServletRequest request, HttpServletResponse response) {
 
         String certNumber = accountService.getCertNumber(loginRequest.getPhoneNumber());
 
@@ -105,7 +108,10 @@ public class AccountController {
     @Setter
     @ToString
     private static class ClientLoginRequest {
+        @NotBlank
         private String phoneNumber;
+        @NotBlank
+        @Size(min = 4, max = 4)
         private String certNum;
         private PlayerType playerType;
     }
