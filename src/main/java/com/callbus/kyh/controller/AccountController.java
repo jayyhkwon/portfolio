@@ -21,6 +21,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/account")
@@ -51,8 +54,8 @@ public class AccountController {
      * @param request
      */
     @PostMapping("/join")
-    public void join(@RequestBody ClientLoginRequest request) {
-        if(request.getPlayerType() == PlayerType.CLIENT){
+    public void join(@RequestBody @Valid ClientLoginRequest request) {
+        if (request.getPlayerType() == PlayerType.CLIENT) {
             accountService.joinAsClient(request.getPhoneNumber());
         }
     }
@@ -87,10 +90,11 @@ public class AccountController {
     @Setter
     @ToString
     private static class ClientLoginRequest {
+        @NotBlank
         private String phoneNumber;
+        @NotBlank
+        @Size(min = 4, max = 4)
         private String certNum;
         private PlayerType playerType;
     }
-
-
 }
