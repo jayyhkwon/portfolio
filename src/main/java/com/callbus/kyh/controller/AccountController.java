@@ -61,7 +61,7 @@ public class AccountController {
      * @param request
      */
     @PostMapping("/join")
-    public void join(@RequestBody ClientLoginRequest request) {
+    public void join(@RequestBody @Valid ClientLoginRequest request) {
         if (request.getPlayerType() == PlayerType.CLIENT) {
             accountService.joinAsClient(request.getPhoneNumber());
         }
@@ -107,11 +107,14 @@ public class AccountController {
     @Setter
     @ToString
     private static class ClientLoginRequest {
+        @NotBlank
         private String phoneNumber;
+        @NotBlank
+        @Size(min = 4, max = 4)
         private String certNum;
         private PlayerType playerType;
     }
-
+  
     @Getter
     @Setter
     @ToString
@@ -119,5 +122,4 @@ public class AccountController {
         @NotBlank
         private String phoneNumber;
     }
-
 }
