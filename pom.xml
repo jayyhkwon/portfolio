@@ -138,8 +138,33 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <finalName>callbus_${buildtime}</finalName>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.11</version>
+                <executions>
+                    <execution>
+                        <id>timestamp-property</id>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                        <configuration>
+                            <name>buildtime</name> <!-- Usage : ${buildtime} -->
+                            <pattern>yyyyMMdd_HHmmss</pattern>
+                            <timeZone>GMT+9</timeZone>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
+
+
+
     </build>
 
 </project>
