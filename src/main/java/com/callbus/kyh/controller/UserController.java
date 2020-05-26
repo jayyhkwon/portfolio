@@ -3,16 +3,13 @@ package com.callbus.kyh.controller;
 import com.callbus.kyh.aop.LoginCheck;
 import com.callbus.kyh.dto.ticket.TicketBiddingDTO;
 import com.callbus.kyh.dto.ticket.TicketDTO;
-import com.callbus.kyh.error.InvalidRequestException;
 import com.callbus.kyh.service.UserService;
 import com.callbus.kyh.utils.SessionUtils;
-import com.callbus.kyh.utils.ValidateUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -77,7 +74,7 @@ public class UserController {
     /**
      * 티켓 취소
      */
-
+    @LoginCheck
     @DeleteMapping("/tickets/{ticketId}")
     public void cancelTicket(@PathVariable("ticketId") long ticketId, @RequestBody @Valid TicketCancelRequest request,
                              HttpSession session) {
