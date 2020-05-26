@@ -1,8 +1,10 @@
 package com.callbus.kyh.controller;
 
 import com.callbus.kyh.error.DuplicatedPhoneNumberException;
+import com.callbus.kyh.error.InvalidCertNumberException;
 import com.callbus.kyh.service.AccountService;
 import com.callbus.kyh.service.PushService;
+import com.callbus.kyh.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -34,6 +37,9 @@ public class AccountControllerTest {
     @MockBean
     PushService pushService;
 
+    @MockBean
+    UserService userService;
+
     String request;
 
     @Autowired
@@ -42,7 +48,7 @@ public class AccountControllerTest {
 
     @Before
     public void setUp() {
-        request = "{\"phoneNumber\":\"01012345678\",\"certNum\":\"1234\",\"playerType\":\"2\"}";
+        request = "{\"phoneNumber\":\"01012345678\",\"certNum\":\"1234\",\"playerType\":\"0\"}";
 //        accountController = new AccountController(accountService, pushService);
 //        this.mockMvc = MockMvcBuilders.standaloneSetup(accountController)
 //                                        .setControllerAdvice(new ErrorController())
@@ -77,6 +83,7 @@ public class AccountControllerTest {
     public void login_인증번호_일치() throws Exception {
 
         given(accountService.getCertNumber(anyString())).willReturn("1234");
+        given(userService.getClientIdByPhoneNumber(anyString())).willReturn(1L);
 
         mockMvc.perform(post("/account/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +99,7 @@ public class AccountControllerTest {
         mockMvc.perform(post("/account/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(request))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
 
     }
 

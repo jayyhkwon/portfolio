@@ -69,14 +69,14 @@ public class AccountController {
 
     /**
      * 로그인
+     *
      * @param loginRequest
      * @param request
      * @param response
      */
     @PostMapping("/login")
-    public void login(@RequestBody ClientLoginRequest loginRequest,
-                      HttpServletRequest request,
-                      HttpServletResponse response) {
+    public void login(@RequestBody @Valid ClientLoginRequest loginRequest,
+                      HttpServletRequest request, HttpServletResponse response) {
 
         String certNumber = accountService.getCertNumber(loginRequest.getPhoneNumber());
 
