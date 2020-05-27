@@ -1,23 +1,21 @@
 package com.callbus.kyh.controller;
 
 import com.callbus.kyh.dto.ticket.TicketDTO;
+import com.callbus.kyh.error.ErrorController;
 import com.callbus.kyh.service.UserService;
 import com.callbus.kyh.utils.SessionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.HttpSession;
 
@@ -27,11 +25,9 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "spring.config.location=classpath:/application.yml")
-@PowerMockRunnerDelegate(SpringRunner.class)
 @RunWith(PowerMockRunner.class)
+//@PowerMockRunnerDelegate(MockitoJUnitRunner.class)
 @PrepareForTest(SessionUtils.class)
-@AutoConfigureMockMvc
 /*
  * static class를 mocking 하기 위해 powerMock를 사용하였으며,
  * Spring 환경에서 테스트를 하기 위해서 PowerMockRunnerDelegate 애노테이션을 추가하였다.
@@ -39,13 +35,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 public class UserControllerTest {
 
-    @MockBean
+    UserController userController;
+
+    @Mock
     UserService userService;
 
     @Mock
     HttpSession session;
 
-    @Autowired
     MockMvc mockMvc;
 
     String request = "{\"srcName\": \"신촌역 2호선\"," +
@@ -81,10 +78,24 @@ public class UserControllerTest {
             "}";
 
     String cancelRequest = "{\"ticketType\": 0, \"cancelReason\": 2}";
+
+
     @Before
     public void setUp() {
-        PowerMockito.mockStatic(SessionUtils.class);
-        PowerMockito.when(SessionUtils.getClientId(session)).thenReturn(1L);
+
+        try {
+            PowerMockito.mockStatic(SessionUtils.class);
+            PowerMockito.when(SessionUtils.getClientId(session)).thenReturn(1L);
+            userController = new UserController(userService);
+            mockMvc = MockMvcBuilders.standaloneSetup(userController)
+                    .setControllerAdvice(new ErrorController())
+                    .build();
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+
     }
 
 
@@ -128,3 +139,4 @@ public class UserControllerTest {
     }
 
 }
+
