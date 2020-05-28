@@ -12,6 +12,7 @@ import com.callbus.kyh.mapper.TicketMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class UserService {
 
 
     // select문의 경우 결과가 없는 경우 null이 리턴된다. (primitive type)
+    @Transactional
     public long getClientIdByPhoneNumber(String phoneNumber) {
         Long clientId;
         clientId = clientMapper.findIdByPhoneNumber(phoneNumber);
@@ -43,6 +45,7 @@ public class UserService {
     }
 
 
+    @Transactional
     public Long createTicket(TicketDTO ticket) {
         ticketMapper.createTicket(ticket);
         long id = ticket.getId();
@@ -51,6 +54,7 @@ public class UserService {
         return id;
     }
 
+    @Transactional
     public void updateTicket(TicketDTO ticket) {
         int result = ticketMapper.updateTicket(ticket);
         if (result != 1) {
@@ -58,6 +62,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void cancelTicket(long clientId, long ticketId, TicketDTO.CancelReason cancelReason) {
         boolean hasTicket = ticketMapper.hasTicket(clientId, ticketId);
 
@@ -72,6 +77,7 @@ public class UserService {
     }
 
 
+    @Transactional
     public List<TicketBiddingDTO> getTicketBiddings(long clientId) {
 
         List<TicketBiddingDTO> ticketBiddings = new ArrayList<>();

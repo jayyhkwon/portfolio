@@ -9,6 +9,7 @@ import com.callbus.kyh.utils.RedisKeyFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
@@ -38,6 +39,7 @@ public class AccountService {
         return certNumber;
     }
 
+    @Transactional
     public void joinAsClient(String phoneNumber) {
 
         boolean isDuplicatePhoneNumber = isDuplicatePhoneNumber(phoneNumber);
