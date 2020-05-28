@@ -125,9 +125,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <finalName>callbus_${buildtime}</finalName>
-                </configuration>
+<!--                <configuration>-->
+<!--                    <finalName>callbus_${buildtime}</finalName>-->
+<!--                </configuration>-->
             </plugin>
 
             <plugin>
@@ -154,6 +154,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
         </plugins>
+
+        <finalName>callbus_${buildtime}</finalName>
     </build>
 
 </project>
